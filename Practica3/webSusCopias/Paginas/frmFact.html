@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SusCopias SAS - Facturación</title>
+    <style>
+        body {
+            background-color: #FDF6EC;
+            margin: 20px 0;
+        }
+
+        .txt-titulo {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 20px;
+            color: #3C2007;
+            text-align: center;
+            line-height: 1.5;
+            font-weight: bold;
+        }
+
+        .txt-etiqueta {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 15px;
+            color: #3C2007;
+            text-align: right;
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        .tabla {
+            width: 80%;
+            margin: 0 auto 15px auto;
+            border: 2px solid #3C2007;
+            border-radius: 8px;
+            padding: 8px;
+            background-color: #FFFFFF;
+        }
+
+        .tabla td {
+            padding: 4px 8px;
+        }
+
+        .tabla input[type=text] {
+            width: 95%;
+            padding: 4px;
+            font-size: 15px;
+        }
+
+        .tabla input[readonly] {
+            background-color: #EFE6DA;
+            text-align: right;
+        }
+
+        .centro {
+            text-align: center;
+        }
+
+        .boton {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 16px;
+            color: #FFFFFF;
+            background-color: #3C2007;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 25px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado -->
+    <table class="tabla">
+        <tr>
+            <td class="txt-titulo">SusCopias SAS</td>
+        </tr>
+        <tr>
+            <td class="txt-titulo">Facturación de copias en blanco y negro</td>
+        </tr>
+    </table>
+
+    <!-- Datos del cliente -->
+    <table class="tabla">
+        <tr>
+            <td colspan="4" class="txt-titulo">Datos del cliente</td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta" style="width: 20%;">Nombre:</td>
+            <td style="width: 35%;"><input type="text" id="txtNombre" /></td>
+            <td class="txt-etiqueta" style="width: 20%;">Nro. documento:</td>
+            <td style="width: 25%;"><input type="text" id="txtNroDoc" /></td>
+        </tr>
+    </table>
+
+    <!-- Datos de entrada y valor a pagar por cada tipo de copia -->
+    <table class="tabla">
+        <tr>
+            <td colspan="4" class="txt-titulo">Detalle del servicio</td>
+        </tr>
+        <tr>
+            <td class="txt-titulo" style="width: 25%;">Tipo de copia</td>
+            <td class="txt-titulo" style="width: 25%;">Valor copia</td>
+            <td class="txt-titulo" style="width: 20%;">Cantidad</td>
+            <td class="txt-titulo" style="width: 30%;">Valor a pagar</td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Carta:</td>
+            <td><input type="text" id="txtVrCarta" readonly /></td>
+            <td><input type="text" id="txtCantCarta" inputmode="numeric" /></td>
+            <td><input type="text" id="txtSubTotCarta" readonly /></td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Oficio:</td>
+            <td><input type="text" id="txtVrOfic" readonly /></td>
+            <td><input type="text" id="txtCantOfic" inputmode="numeric" /></td>
+            <td><input type="text" id="txtSubTotOfic" readonly /></td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Extra-Oficio:</td>
+            <td><input type="text" id="txtVrExtOfic" readonly /></td>
+            <td><input type="text" id="txtCantExtOfic" inputmode="numeric" /></td>
+            <td><input type="text" id="txtSubTotExtOfic" readonly /></td>
+        </tr>
+    </table>
+
+    <!-- Totales de la factura (salida) -->
+    <table class="tabla">
+        <tr>
+            <td colspan="2" class="txt-titulo">Totales de la factura</td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta" style="width: 50%;">Subtotal:</td>
+            <td style="width: 50%;"><input type="text" id="txtSubTot" readonly /></td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Porcentaje descuento (%):</td>
+            <td><input type="text" id="txtPorcDscto" readonly /></td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Valor descuento:</td>
+            <td><input type="text" id="txtDscto" readonly /></td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">IVA (7.5 %):</td>
+            <td><input type="text" id="txtIva" readonly /></td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Total a pagar:</td>
+            <td><input type="text" id="txtAPagar" readonly /></td>
+        </tr>
+    </table>
+
+    <!-- Botones -->
+    <table class="tabla">
+        <tr>
+            <td class="centro">
+                <button type="button" id="btnProcesar" class="boton">Procesar</button>
+                <button type="button" id="btnLimpiar" class="boton">Limpiar</button>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Scripts al final del body: primero jQuery y luego el script del formulario -->
+    <script src="../Scripts/jquery-3.7.0.min.js"></script>
+    <script src="../scripts_form/ctlFrmFact.js"></script>
+</body>
+</html>
