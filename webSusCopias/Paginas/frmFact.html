@@ -88,9 +88,9 @@
         </tr>
         <tr>
             <td class="txt-etiqueta" style="width: 20%;">Nombre:</td>
-            <td style="width: 35%;"><input type="text" id="txtNombre" /></td>
+            <td style="width: 35%;"><input type="text" id="txtNombre" maxlength="100" /></td>
             <td class="txt-etiqueta" style="width: 20%;">Nro. documento:</td>
-            <td style="width: 25%;"><input type="text" id="txtNroDoc" /></td>
+            <td style="width: 25%;"><input type="text" id="txtNroDoc" maxlength="20" /></td>
         </tr>
     </table>
 
@@ -129,6 +129,10 @@
     <table class="tabla">
         <tr>
             <td colspan="2" class="txt-titulo">Totales de la factura</td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Factura No.:</td>
+            <td><input type="text" id="txtNroFact" readonly /></td>
         </tr>
         <tr>
             <td class="txt-etiqueta" style="width: 50%;">Subtotal:</td>

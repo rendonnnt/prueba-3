@@ -13,6 +13,8 @@ namespace apiSusCopias.Models
         public int kC { get; set; }           // Cantidad de copias tipo Carta
         public int kO { get; set; }           // Cantidad de copias tipo Oficio
         public int kE { get; set; }           // Cantidad de copias tipo Extra-Oficio
+        public string nomCli { get; set; }    // Nombre del cliente (se guarda en la base de datos)
+        public string docCli { get; set; }    // Número de documento del cliente
 
         // ---------------- Propiedades de salida -----------------
         public float vrTotC { get; set; }     // Valor a pagar por las copias tipo Carta
@@ -23,10 +25,11 @@ namespace apiSusCopias.Models
         public float vrDscto { get; set; }    // Valor del descuento
         public float vrIva { get; set; }      // Valor del impuesto IVA (7.5 %)
         public float vrAPag { get; set; }     // Valor total a pagar
+        public int nroFact { get; set; }      // Número de la factura guardada en la base de datos
         public string Error { get; set; }     // Mensaje de error ("" si no hay error)
 
         /// <summary>
-        /// Constructor: inicializa en cero los valores numéricos y en vacío la cadena.
+        /// Constructor: inicializa en cero los valores numéricos y en vacío las cadenas.
         /// </summary>
         public modSusCopias()
         {
@@ -36,6 +39,8 @@ namespace apiSusCopias.Models
             kC = 0;
             kO = 0;
             kE = 0;
+            nomCli = "";
+            docCli = "";
 
             vrTotC = 0;
             vrTotO = 0;
@@ -45,6 +50,7 @@ namespace apiSusCopias.Models
             vrDscto = 0;
             vrIva = 0;
             vrAPag = 0;
+            nroFact = 0;
             Error = "";
         }
     }

@@ -82,7 +82,11 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BaseDatos\bdSusCopias.sql" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Clases\clsDatSusCopias.cs" />
     <Compile Include="Clases\clsOpeSusCopias.cs" />
     <Compile Include="Controllers\servSusCopiasController.cs" />
     <Compile Include="Global.asax.cs">

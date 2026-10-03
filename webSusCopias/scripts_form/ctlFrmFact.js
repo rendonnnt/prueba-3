@@ -77,6 +77,7 @@ function limpiarTotal() {
 
 // Limpia las cajas de texto de salida (respuesta del servicio)
 function limpiarRpta() {
+    $("#txtNroFact").val("");
     $("#txtSubTotCarta").val("");
     $("#txtSubTotOfic").val("");
     $("#txtSubTotExtOfic").val("");
@@ -143,6 +144,8 @@ async function Procesar() {
     // Crear el objeto JSON con los datos de entrada.
     // Los nombres deben coincidir con los nombres de las propiedades del modelo
     const datosOut = {
+        nomCli: nombre,
+        docCli: nroDoc,
         vrC: parseFloat(vrCa),
         vrO: parseFloat(vrOf),
         vrE: parseFloat(vrEx),
@@ -150,6 +153,9 @@ async function Procesar() {
         kO: Number(kOf),
         kE: Number(kEx)
     };
+
+    // Se deshabilita el botón mientras responde el servicio, para no guardar la factura dos veces
+    $("#btnProcesar").prop("disabled", true);
 
     try {
         // Invocar el servicio - Enviar la información y recuperar la respuesta.
@@ -176,6 +182,7 @@ async function Procesar() {
             return;
         }
 
+        $("#txtNroFact").val(Rpta.nroFact);
         $("#txtSubTotCarta").val(fnro(Rpta.vrTotC));
         $("#txtSubTotOfic").val(fnro(Rpta.vrTotO));
         $("#txtSubTotExtOfic").val(fnro(Rpta.vrTotE));
@@ -187,5 +194,8 @@ async function Procesar() {
     }
     catch (e) {
         alert("Error, " + e);
+    }
+    finally {
+        $("#btnProcesar").prop("disabled", false);
     }
 }

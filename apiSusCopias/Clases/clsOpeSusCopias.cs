@@ -1,3 +1,4 @@
+using System;
 using apiSusCopias.Models;
 
 namespace apiSusCopias.Clases
@@ -22,8 +23,8 @@ namespace apiSusCopias.Clases
 
         /// <summary>
         /// Método público: recibe los datos de entrada, halla el valor a pagar por cada
-        /// tipo de copia y el subtotal, luego el descuento, el IVA y el total a pagar.
-        /// Retorna el mismo objeto modelo con las propiedades de salida calculadas.
+        /// tipo de copia y el subtotal, luego el descuento, el IVA y el total a pagar, y guarda
+        /// la factura en la base de datos. Retorna el mismo objeto modelo con las salidas.
         /// </summary>
         public modSusCopias Facturar(modSusCopias objIN)
         {
@@ -54,6 +55,17 @@ namespace apiSusCopias.Clases
             pMod.vrIva = (pMod.vrSubTot - pMod.vrDscto) * PORC_IVA / 100;
             pMod.vrAPag = pMod.vrSubTot - pMod.vrDscto + pMod.vrIva;
 
+            // Guardar la factura en la base de datos (SQL Server) y obtener su número
+            try
+            {
+                clsDatSusCopias objDat = new clsDatSusCopias();
+                pMod.nroFact = objDat.GuardarFactura(pMod);
+            }
+            catch (Exception ex)
+            {
+                pMod.Error = "No se pudo guardar la factura en la base de datos: " + ex.Message;
+            }
+
             return pMod;
         }
 
@@ -63,6 +75,21 @@ namespace apiSusCopias.Clases
         /// </summary>
         private bool validar()
         {
+            if (string.IsNullOrWhiteSpace(pMod.nomCli) || string.IsNullOrWhiteSpace(pMod.docCli))
+            {
+                pMod.Error = "Debe ingresar el nombre y el número de documento del cliente";
+                return false;
+            }
+
+            pMod.nomCli = pMod.nomCli.Trim();
+            pMod.docCli = pMod.docCli.Trim();
+
+            if (pMod.nomCli.Length > 100 || pMod.docCli.Length > 20)
+            {
+                pMod.Error = "El nombre admite máximo 100 caracteres y el documento máximo 20";
+                return false;
+            }
+
             if (pMod.vrC <= 0 || pMod.vrO <= 0 || pMod.vrE <= 0)
             {
                 pMod.Error = "Los valores unitarios de las copias deben ser mayores a cero";
