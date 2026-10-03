@@ -1,3 +1,4 @@
 * text=auto
 *.csproj text eol=crlf
 *.min.js -diff
+*.dll binary

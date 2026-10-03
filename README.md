@@ -12,7 +12,7 @@ Solución de la guía de trabajo **FDE 048 – API Web Básica**. Es una aplicac
 ```
 apiSusCopias/                          ← Proyecto 1: Web API (Actividad 3)
 ├── apiSusCopias.csproj                ← se abre este archivo en Visual Studio
-├── NuGet.Config, packages.config      ← referencias NuGet (se restauran en apiSusCopias/packages)
+├── lib/                               ← referencias: DLL de Web API, CORS y Newtonsoft.Json (ya incluidas)
 ├── App_Start/WebApiConfig.cs          ← config.EnableCors()
 ├── Clases/clsOpeSusCopias.cs          ← clase de operaciones
 ├── Controllers/servSusCopiasController.cs
@@ -21,7 +21,6 @@ apiSusCopias/                          ← Proyecto 1: Web API (Actividad 3)
 
 webSusCopias/                          ← Proyecto 2: cliente web (Actividades 4 y 5)
 ├── webSusCopias.csproj                ← se abre este archivo en Visual Studio
-├── NuGet.Config, packages.config      ← referencia NuGet a jQuery 3.7.0
 ├── Paginas/frmFact.html
 ├── Scripts/jquery-3.7.0.min.js
 └── scripts_form/ctlFrmFact.js
@@ -124,14 +123,17 @@ Detalle del caso 1: 130.000 × 15 % = 19.500 → base 130.000 − 19.500 = 110.5
    ```powershell
    Install-Package Microsoft.AspNet.WebApi.Cors
    ```
+   (En el proyecto de este repositorio ya está hecho: las DLL de CORS están en la carpeta `lib`.)
 5. En `App_Start/WebApiConfig.cs`, dentro del método `Register`, agregar `config.EnableCors();`.
 6. En **Controllers** → *Agregar → Controlador → Controlador de Web API 2 – en blanco* con nombre `servSusCopiasController`. No se quita la palabra `Controller`: Web API la usa para reconocer el servicio (la ruta queda `api/servSusCopias`).
 
 ### Referencias del proyecto `apiSusCopias`
 
-Las referencias externas vienen de paquetes NuGet declarados en `apiSusCopias/packages.config`. El archivo `apiSusCopias/NuGet.Config` hace que se descarguen en la carpeta `apiSusCopias/packages`, que es donde las busca el `.csproj` (`<HintPath>packages\...`). Por eso funcionan al abrir el proyecto solo, sin solución. Visual Studio las restaura automáticamente al compilar por primera vez (necesita internet).
+Las referencias externas son DLL que vienen **incluidas en la carpeta `apiSusCopias/lib`**, y el `.csproj` las referencia directamente (`<HintPath>lib\...`). Al compilar se copian a `bin`. Por eso el proyecto compila apenas se abre, solo, sin solución, sin NuGet y sin internet.
 
-| Referencia (ensamblado) | Paquete NuGet | Para qué se usa |
+¿Por qué no se usa NuGet? Visual Studio solo descarga paquetes NuGet cuando hay una solución (`.sln`) guardada. Al abrir el `.csproj` solo, mostraría el error *"No se guardó la solución. Guarde la solución antes de administrar paquetes NuGet"* y las referencias quedarían sin resolver.
+
+| Referencia (DLL en `lib/`) | Paquete NuGet de origen | Para qué se usa |
 | --- | --- | --- |
 | `System.Web.Http` | Microsoft.AspNet.WebApi.Core 5.2.9 | `ApiController`, `HttpConfiguration`, rutas, `[FromBody]` |
 | `System.Web.Http.WebHost` | Microsoft.AspNet.WebApi.WebHost 5.2.9 | Ejecutar la Web API en IIS Express (`GlobalConfiguration`) |
@@ -449,7 +451,7 @@ Si hay un error, por ejemplo `kC = kO = kE = 0`, las salidas quedan en 0 y `"Err
 
 ### Referencias del proyecto `webSusCopias`
 
-- **NuGet:** `jQuery 3.7.0`, declarado en `webSusCopias/packages.config` (se restaura en `webSusCopias/packages`). El archivo que usa la página, `Scripts/jquery-3.7.0.min.js`, ya está incluido en el proyecto.
+- **jQuery 3.7.0:** el archivo `Scripts/jquery-3.7.0.min.js` viene incluido en el proyecto (no se necesita NuGet).
 - **.NET Framework 4.8:** `System`, `System.Core`, `System.Web`, `System.Web.Extensions`, `System.Xml`, etc.
 - **En la página:** `<script src="../Scripts/jquery-3.7.0.min.js">` y `<script src="../scripts_form/ctlFrmFact.js">`.
 - **No referencia al proyecto `apiSusCopias`.** Lo consume como un servicio externo, por su URL (`var dir = "http://localhost:50100/api/servSusCopias"`).
@@ -849,16 +851,37 @@ async function Procesar() {
 
 ## Ejecutar la práctica (cada proyecto por aparte)
 
-1. **API:** en Visual Studio, *Archivo → Abrir → Proyecto o solución* → `apiSusCopias/apiSusCopias.csproj`.
-   - Compilar (*Ctrl+Shift+B*). La primera vez, Visual Studio descarga los paquetes NuGet en `apiSusCopias/packages` y las referencias quedan resueltas.
-   - Ejecutar con **Ctrl+F5** (*Iniciar sin depurar*) para que la API quede corriendo en `http://localhost:50100/`. En la raíz el navegador puede mostrar un error 403/404: es normal, la API no tiene página. El servicio está en `/api/servSusCopias`.
-2. **Cliente:** abrir **otra ventana** de Visual Studio → *Archivo → Abrir → Proyecto o solución* → `webSusCopias/webSusCopias.csproj`.
-   - Clic derecho en `Paginas/frmFact.html` → **Ver en el explorador** (o *Establecer como página de inicio* y **Ctrl+F5**).
-3. Ingresar `100`, `200` y `300` como valores de las copias, llenar los datos del cliente y las cantidades `400`, `300` y `100`, y presionar **Procesar**. Debe aparecer: subtotal `130.000,00`, descuento `15,00` % = `19.500,00`, IVA `8.287,50` y total a pagar **`118.787,50`**.
+**Requisito:** Visual Studio 2022 o 2026 con la carga de trabajo **"Desarrollo de ASP.NET y web"** (incluye .NET Framework 4.8 e IIS Express). No se necesita internet para compilar.
 
-> Al cerrar, Visual Studio puede preguntar si desea guardar un archivo `.sln`. Puede responder **No**: cada proyecto funciona sin solución.
+### 1. Descargar y extraer
+
+1. En https://github.com/rendonnnt/prueba-3, haz clic en **Code → Download ZIP**.
+2. Clic derecho sobre el `.zip` → **Propiedades** → si aparece, marca **Desbloquear** → **Aceptar**. Así Windows no bloquea las DLL de la carpeta `lib`.
+3. Clic derecho → **Extraer todo…** → por ejemplo, en `C:\Practica3`. No abras el proyecto desde dentro del ZIP sin extraerlo.
+
+### 2. API (primero)
+
+1. Visual Studio → **Abrir un proyecto o una solución** → `apiSusCopias\apiSusCopias.csproj`.
+2. Compilar con **Ctrl+Shift+B**. Debe terminar en *"1 correctos"*, sin errores.
+3. Ejecutar con **Ctrl+F5** (*Iniciar sin depurar*) para que la API quede corriendo en `http://localhost:50100/`.
+   - En la raíz, el navegador puede mostrar un error 403/404. Es normal: la API no tiene página; el servicio está en `/api/servSusCopias`.
+   - Deja Visual Studio abierto.
+
+### 3. Cliente (después)
+
+1. Abre **otra ventana** de Visual Studio → **Abrir un proyecto o una solución** → `webSusCopias\webSusCopias.csproj`.
+2. Compilar con **Ctrl+Shift+B**.
+3. Clic derecho en `Paginas/frmFact.html` → **Ver en el explorador**.
+
+### 4. Probar
+
+1. Ingresa `100`, `200` y `300` como valores de las copias.
+2. Llena los datos del cliente y las cantidades `400`, `300` y `100`.
+3. Presiona **Procesar**. Debe aparecer: subtotal `130.000,00`, descuento `15,00` % = `19.500,00`, IVA `8.287,50` y total a pagar **`118.787,50`**.
+
+> Al cerrar, Visual Studio puede preguntar si desea guardar un archivo `.sln`. Puedes responder **No**: cada proyecto funciona sin solución.
 >
-> Si alguna referencia aparece con un triángulo amarillo, hay dos opciones: clic derecho sobre el proyecto → **Restaurar paquetes NuGet**, o en la *Consola del Administrador de paquetes* ejecutar `Update-Package -reinstall`. Luego volver a compilar.
+> Si Visual Studio quedó con errores de una versión anterior de este repositorio, borra esa carpeta, descarga el ZIP de nuevo y repite los pasos.
 
 ### Los dos puertos deben coincidir
 
