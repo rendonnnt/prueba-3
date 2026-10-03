@@ -1,6 +1,6 @@
 # Práctica 3 – API Web básica: "SusCopias SAS"
 
-Solución de la guía de trabajo **FDE 048 – API Web Básica**. Es una aplicación cliente‑servidor:
+Solución de la guía de trabajo **FDE 048 – API Web Básica**. Es una aplicación cliente‑servidor formada por **dos proyectos independientes**. No hay archivo de solución (`.sln`) ni referencias entre ellos: cada uno se abre, compila y ejecuta por separado, y solo se comunican por HTTP enviando y recibiendo JSON.
 
 | Proyecto | Tipo en Visual Studio | Función | URL (IIS Express) |
 | --- | --- | --- | --- |
@@ -10,18 +10,21 @@ Solución de la guía de trabajo **FDE 048 – API Web Básica**. Es una aplicac
 > Se trabaja en **Visual Studio 2022/2026 (el IDE "morado")**, no en Visual Studio Code, porque las plantillas de *Aplicación web ASP.NET (.NET Framework)* y IIS Express solo existen allí.
 
 ```
-Practica3/
-├── Practica3.sln
-├── apiSusCopias/                      ← Actividad 3 (servidor)
-│   ├── App_Start/WebApiConfig.cs      ← config.EnableCors()
-│   ├── Clases/clsOpeSusCopias.cs      ← clase de operaciones
-│   ├── Controllers/servSusCopiasController.cs
-│   ├── Models/modSusCopias.cs         ← clase modelo (request / response)
-│   ├── Global.asax(.cs), Web.config, packages.config
-└── webSusCopias/                      ← Actividades 4 y 5 (cliente)
-    ├── Paginas/frmFact.html
-    ├── Scripts/jquery-3.7.0.min.js
-    └── scripts_form/ctlFrmFact.js
+apiSusCopias/                          ← Proyecto 1: Web API (Actividad 3)
+├── apiSusCopias.csproj                ← se abre este archivo en Visual Studio
+├── NuGet.Config, packages.config      ← referencias NuGet (se restauran en apiSusCopias/packages)
+├── App_Start/WebApiConfig.cs          ← config.EnableCors()
+├── Clases/clsOpeSusCopias.cs          ← clase de operaciones
+├── Controllers/servSusCopiasController.cs
+├── Models/modSusCopias.cs             ← clase modelo (request / response)
+└── Global.asax(.cs), Web.config
+
+webSusCopias/                          ← Proyecto 2: cliente web (Actividades 4 y 5)
+├── webSusCopias.csproj                ← se abre este archivo en Visual Studio
+├── NuGet.Config, packages.config      ← referencia NuGet a jQuery 3.7.0
+├── Paginas/frmFact.html
+├── Scripts/jquery-3.7.0.min.js
+└── scripts_form/ctlFrmFact.js
 ```
 
 **Problema:** calcular el pago de un servicio de copias en blanco y negro de tres tipos: Carta (C), Oficio (O) y Extra‑Oficio (E). Si la cantidad total de copias está **entre 50 y 100** se otorga **10 %** de descuento; si es **mayor a 100**, **15 %**. El **IVA es del 7.5 %**. No necesariamente se facturan todos los tipos de copia al mismo tiempo.
@@ -114,24 +117,43 @@ Detalle del caso 1: 130.000 × 15 % = 19.500 → base 130.000 − 19.500 = 110.5
 
 ### Paso a paso en Visual Studio
 
-1. Crear la carpeta `Practica3`.
-2. **Crear un proyecto** → *Aplicación web ASP.NET (.NET Framework)* en C# → nombre `apiSusCopias`, en la carpeta `Practica3` → plantilla **API web** (o *Vacío* marcando *Web API*) → **desmarcar "Configurar para HTTPS"** → *Crear*.
-3. En la carpeta **Models** agregar la clase `modSusCopias`.
-4. Crear la carpeta **Clases** y agregar la clase `clsOpeSusCopias`.
-5. Instalar CORS: *Herramientas → Administrador de paquetes NuGet → Consola del Administrador de paquetes* y ejecutar:
+1. **Crear un proyecto** → *Aplicación web ASP.NET (.NET Framework)* en C# → nombre `apiSusCopias` → plantilla **API web** (o *Vacío* marcando *Web API*) → **desmarcar "Configurar para HTTPS"** → *Crear*.
+2. En la carpeta **Models** agregar la clase `modSusCopias`.
+3. Crear la carpeta **Clases** y agregar la clase `clsOpeSusCopias`.
+4. Instalar CORS: *Herramientas → Administrador de paquetes NuGet → Consola del Administrador de paquetes* y ejecutar:
    ```powershell
    Install-Package Microsoft.AspNet.WebApi.Cors
    ```
-6. En `App_Start/WebApiConfig.cs`, dentro del método `Register`, agregar `config.EnableCors();`.
-7. En **Controllers** → *Agregar → Controlador → Controlador de Web API 2 – en blanco* con nombre `servSusCopiasController`. No se quita la palabra `Controller`: Web API la usa para reconocer el servicio (la ruta queda `api/servSusCopias`).
+5. En `App_Start/WebApiConfig.cs`, dentro del método `Register`, agregar `config.EnableCors();`.
+6. En **Controllers** → *Agregar → Controlador → Controlador de Web API 2 – en blanco* con nombre `servSusCopiasController`. No se quita la palabra `Controller`: Web API la usa para reconocer el servicio (la ruta queda `api/servSusCopias`).
 
-> En la solución de este repositorio los paquetes NuGet ya están declarados en `packages.config`: Visual Studio los restaura solo al compilar.
+### Referencias del proyecto `apiSusCopias`
+
+Las referencias externas vienen de paquetes NuGet declarados en `apiSusCopias/packages.config`. El archivo `apiSusCopias/NuGet.Config` hace que se descarguen en la carpeta `apiSusCopias/packages`, que es donde las busca el `.csproj` (`<HintPath>packages\...`). Por eso funcionan al abrir el proyecto solo, sin solución. Visual Studio las restaura automáticamente al compilar por primera vez (necesita internet).
+
+| Referencia (ensamblado) | Paquete NuGet | Para qué se usa |
+| --- | --- | --- |
+| `System.Web.Http` | Microsoft.AspNet.WebApi.Core 5.2.9 | `ApiController`, `HttpConfiguration`, rutas, `[FromBody]` |
+| `System.Web.Http.WebHost` | Microsoft.AspNet.WebApi.WebHost 5.2.9 | Ejecutar la Web API en IIS Express (`GlobalConfiguration`) |
+| `System.Net.Http.Formatting` | Microsoft.AspNet.WebApi.Client 5.2.9 | Convertir el JSON del request/response en objetos |
+| `Newtonsoft.Json` | Newtonsoft.Json 13.0.3 | Motor JSON que usa Web API |
+| `System.Web.Http.Cors` | **Microsoft.AspNet.WebApi.Cors 5.2.9** | `[EnableCors]` y `config.EnableCors()` |
+| `System.Web.Cors` | Microsoft.AspNet.Cors 5.2.9 | Núcleo de CORS (dependencia del anterior) |
+
+Además tiene las referencias estándar de .NET Framework 4.8: `System`, `System.Core`, `System.Web`, `System.Net.Http`, `System.Xml`, etc. En el código, el controlador las usa con:
+
+```csharp
+using System.Web.Http;          // ApiController
+using System.Web.Http.Cors;     // EnableCors
+using apiSusCopias.Models;      // modSusCopias
+using apiSusCopias.Clases;      // clsOpeSusCopias
+```
 
 ### Clase modelo: `Models/modSusCopias.cs`
 
 Sirve a la vez como **request** y como **response**: Web API convierte el JSON que llega en un objeto `modSusCopias` y convierte el objeto que se retorna en JSON. Por eso los nombres de las propiedades deben coincidir con las claves del JSON que arma el cliente. El constructor deja los números en cero y el `Error` vacío; así, si falta algún dato en el JSON, la propiedad queda en 0.
 
-Archivo: [`Practica3/apiSusCopias/Models/modSusCopias.cs`](Practica3/apiSusCopias/Models/modSusCopias.cs)
+Archivo: [`apiSusCopias/Models/modSusCopias.cs`](apiSusCopias/Models/modSusCopias.cs)
 
 ```csharp
 namespace apiSusCopias.Models
@@ -192,15 +214,15 @@ namespace apiSusCopias.Models
 Diagrama UML:
 
 ```text
-┌─────────────────────────────────────────────────┐
-│                 clsOpeSusCopias                 │
-├─────────────────────────────────────────────────┤
-│ + pMod : modSusCopias                           │
-├─────────────────────────────────────────────────┤
-│ + Facturar(objIN : modSusCopias) : modSusCopias │
-│ - validar() : bool                              │
-│ - hallarDescuento() : void                      │
-└─────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────┐
+│               clsOpeSusCopias                 │
+├───────────────────────────────────────────────┤
+│ + pMod : modSusCopias                         │
+├───────────────────────────────────────────────┤
+│ + Facturar(objIN : modSusCopias) : modSusCopias│
+│ - validar() : bool                            │
+│ - hallarDescuento() : void                    │
+└───────────────────────────────────────────────┘
 ```
 
 - **`Facturar(objIN)`** (público): recibe el modelo, lo valida, halla el valor de cada tipo de copia y el subtotal, llama a `hallarDescuento()`, halla el IVA y el total a pagar, y **retorna el mismo modelo** ya con las salidas.
@@ -208,7 +230,7 @@ Diagrama UML:
 - **`hallarDescuento()`** (privado): calcula el porcentaje (0, 10 o 15) según el total de copias, y luego el valor del descuento.
 - Los porcentajes son constantes con nombre (`PORC_IVA`, etc.) para no repetir "números mágicos".
 
-Archivo: [`Practica3/apiSusCopias/Clases/clsOpeSusCopias.cs`](Practica3/apiSusCopias/Clases/clsOpeSusCopias.cs)
+Archivo: [`apiSusCopias/Clases/clsOpeSusCopias.cs`](apiSusCopias/Clases/clsOpeSusCopias.cs)
 
 ```csharp
 using apiSusCopias.Models;
@@ -329,7 +351,7 @@ namespace apiSusCopias.Clases
 - `[EnableCors]` va **antes de la clase** y habilita a mano el acceso del cliente. `origins` es la URL con el **puerto del proyecto web** (`webSusCopias`, aquí `50200`), sin `/` al final. `headers: "*"` y `methods: "*"` permiten cualquier encabezado y método. Hace falta porque la página y la API corren en puertos distintos, es decir, en *orígenes cruzados*, y el navegador bloquea esa petición si el servidor no la autoriza.
 - Tiene un **único método `Post`**. Recibe `objIN` (el JSON ya convertido en `modSusCopias`), crea `clsOpeSusCopias`, llama a `Facturar` y retorna el modelo, que Web API serializa en JSON.
 
-Archivo: [`Practica3/apiSusCopias/Controllers/servSusCopiasController.cs`](Practica3/apiSusCopias/Controllers/servSusCopiasController.cs)
+Archivo: [`apiSusCopias/Controllers/servSusCopiasController.cs`](apiSusCopias/Controllers/servSusCopiasController.cs)
 
 ```csharp
 using System.Web.Http;
@@ -359,7 +381,7 @@ namespace apiSusCopias.Controllers
 
 `config.EnableCors()` activa el componente CORS. Además se quita el formateador XML para que la respuesta sea siempre JSON.
 
-Archivo: [`Practica3/apiSusCopias/App_Start/WebApiConfig.cs`](Practica3/apiSusCopias/App_Start/WebApiConfig.cs)
+Archivo: [`apiSusCopias/App_Start/WebApiConfig.cs`](apiSusCopias/App_Start/WebApiConfig.cs)
 
 ```csharp
 using System.Web.Http;
@@ -420,10 +442,17 @@ Si hay un error, por ejemplo `kC = kO = kE = 0`, las salidas quedan en 0 y `"Err
 
 ### Paso a paso en Visual Studio
 
-1. En la misma solución: **Crear un proyecto** → *Aplicación web ASP.NET (.NET Framework)* en C# → nombre `webSusCopias`, en la carpeta `Practica3` → plantilla **Web Forms** → **desmarcar "Configurar para HTTPS"** → *Crear*. La plantilla Web Forms trae jQuery en la carpeta `Scripts` (la guía usa `jquery-3.7.0.min.js`). En este repositorio el proyecto es mínimo y solo tiene lo que usa la práctica.
+1. Por aparte, **Crear un proyecto** → *Aplicación web ASP.NET (.NET Framework)* en C# → nombre `webSusCopias` → plantilla **Web Forms** → **desmarcar "Configurar para HTTPS"** → *Crear*. La plantilla Web Forms ya trae `Scripts/jquery-3.7.0.min.js`. En este repositorio el proyecto es mínimo y solo tiene lo que usa la práctica.
 2. Crear la carpeta **Paginas** y agregar la página HTML `frmFact.html` (Actividad 4).
 3. Crear la carpeta **scripts_form** y agregar el archivo JavaScript `ctlFrmFact.js` (Actividad 5).
 4. En `frmFact.html`, al final del `<body>`, enlazar primero `jquery-3.7.0.min.js` (arrastrándolo desde la carpeta `Scripts`) y después `ctlFrmFact.js`.
+
+### Referencias del proyecto `webSusCopias`
+
+- **NuGet:** `jQuery 3.7.0`, declarado en `webSusCopias/packages.config` (se restaura en `webSusCopias/packages`). El archivo que usa la página, `Scripts/jquery-3.7.0.min.js`, ya está incluido en el proyecto.
+- **.NET Framework 4.8:** `System`, `System.Core`, `System.Web`, `System.Web.Extensions`, `System.Xml`, etc.
+- **En la página:** `<script src="../Scripts/jquery-3.7.0.min.js">` y `<script src="../scripts_form/ctlFrmFact.js">`.
+- **No referencia al proyecto `apiSusCopias`.** Lo consume como un servicio externo, por su URL (`var dir = "http://localhost:50100/api/servSusCopias"`).
 
 ### Actividad 4: formulario `Paginas/frmFact.html`
 
@@ -432,7 +461,7 @@ Si hay un error, por ejemplo `kC = kO = kE = 0`, las salidas quedan en 0 y `"Err
 - Los valores de las copias y todas las salidas son `readonly`: el enunciado pide que los valores de las copias no se puedan modificar.
 - Nombres de las cajas de texto: `txtNombre`, `txtNroDoc`, `txtVrCarta`/`txtVrOfic`/`txtVrExtOfic`, `txtCantCarta`/`txtCantOfic`/`txtCantExtOfic`, `txtSubTotCarta`/`txtSubTotOfic`/`txtSubTotExtOfic`, `txtSubTot`, `txtPorcDscto`, `txtDscto`, `txtIva`, `txtAPagar`. Botones: `btnProcesar` y `btnLimpiar`.
 
-Archivo: [`Practica3/webSusCopias/Paginas/frmFact.html`](Practica3/webSusCopias/Paginas/frmFact.html)
+Archivo: [`webSusCopias/Paginas/frmFact.html`](webSusCopias/Paginas/frmFact.html)
 
 ```html
 <!DOCTYPE html>
@@ -620,7 +649,7 @@ Flujo del script:
 4. **`fnro(vr)`** formatea con `toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })`. Por ejemplo, `118787.5` → `118.787,50`.
 5. **`limpiarTotal()` / `limpiarRpta()`** limpian el formulario o solo la respuesta. Al cambiar una cantidad también se limpia la respuesta anterior, para no mostrar totales que ya no corresponden.
 
-Archivo: [`Practica3/webSusCopias/scripts_form/ctlFrmFact.js`](Practica3/webSusCopias/scripts_form/ctlFrmFact.js)
+Archivo: [`webSusCopias/scripts_form/ctlFrmFact.js`](webSusCopias/scripts_form/ctlFrmFact.js)
 
 ```javascript
 // Dirección del servicio en la Web API (apiSusCopias).
@@ -818,13 +847,18 @@ async function Procesar() {
 
 ---
 
-## Ejecutar la práctica
+## Ejecutar la práctica (cada proyecto por aparte)
 
-1. Abrir `Practica3/Practica3.sln` en Visual Studio 2022/2026.
-2. Clic derecho en la solución → **Configurar proyectos de inicio… → Proyectos de inicio múltiples** → poner `apiSusCopias` y `webSusCopias` en **Iniciar**.
-3. Clic derecho en `Paginas/frmFact.html` → **Establecer como página de inicio** (*Set As Start Page*).
-4. Presionar **F5**. Visual Studio restaura los paquetes NuGet, compila y abre los dos sitios en IIS Express.
-5. Ingresar `100`, `200` y `300` como valores de las copias, llenar los datos del cliente y las cantidades `400`, `300` y `100`, y presionar **Procesar**. Debe aparecer: subtotal `130.000,00`, descuento `15,00` % = `19.500,00`, IVA `8.287,50` y total a pagar **`118.787,50`**.
+1. **API:** en Visual Studio, *Archivo → Abrir → Proyecto o solución* → `apiSusCopias/apiSusCopias.csproj`.
+   - Compilar (*Ctrl+Shift+B*). La primera vez, Visual Studio descarga los paquetes NuGet en `apiSusCopias/packages` y las referencias quedan resueltas.
+   - Ejecutar con **Ctrl+F5** (*Iniciar sin depurar*) para que la API quede corriendo en `http://localhost:50100/`. En la raíz el navegador puede mostrar un error 403/404: es normal, la API no tiene página. El servicio está en `/api/servSusCopias`.
+2. **Cliente:** abrir **otra ventana** de Visual Studio → *Archivo → Abrir → Proyecto o solución* → `webSusCopias/webSusCopias.csproj`.
+   - Clic derecho en `Paginas/frmFact.html` → **Ver en el explorador** (o *Establecer como página de inicio* y **Ctrl+F5**).
+3. Ingresar `100`, `200` y `300` como valores de las copias, llenar los datos del cliente y las cantidades `400`, `300` y `100`, y presionar **Procesar**. Debe aparecer: subtotal `130.000,00`, descuento `15,00` % = `19.500,00`, IVA `8.287,50` y total a pagar **`118.787,50`**.
+
+> Al cerrar, Visual Studio puede preguntar si desea guardar un archivo `.sln`. Puede responder **No**: cada proyecto funciona sin solución.
+>
+> Si alguna referencia aparece con un triángulo amarillo, hay dos opciones: clic derecho sobre el proyecto → **Restaurar paquetes NuGet**, o en la *Consola del Administrador de paquetes* ejecutar `Update-Package -reinstall`. Luego volver a compilar.
 
 ### Los dos puertos deben coincidir
 
