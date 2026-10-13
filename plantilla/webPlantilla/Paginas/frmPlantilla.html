@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- >>> CAMBIAR el título de la pestaña -->
+    <title>Plantilla - Cálculo</title>
+    <style>
+        body {
+            background-color: #FDF6EC;
+            margin: 20px 0;
+        }
+
+        .txt-titulo {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 20px;
+            color: #3C2007;
+            text-align: center;
+            line-height: 1.5;
+            font-weight: bold;
+        }
+
+        .txt-etiqueta {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 15px;
+            color: #3C2007;
+            text-align: right;
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        .tabla {
+            width: 80%;
+            margin: 0 auto 15px auto;
+            border: 2px solid #3C2007;
+            border-radius: 8px;
+            padding: 8px;
+            background-color: #FFFFFF;
+        }
+
+        .tabla td {
+            padding: 4px 8px;
+        }
+
+        .tabla input[type=text], .tabla input[type=date], .tabla select {
+            width: 95%;
+            padding: 4px;
+            font-size: 15px;
+        }
+
+        .tabla input[readonly] {
+            background-color: #EFE6DA;
+            text-align: right;
+        }
+
+        .centro {
+            text-align: center;
+        }
+
+        .boton {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 16px;
+            color: #FFFFFF;
+            background-color: #3C2007;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 25px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado. >>> CAMBIAR los textos -->
+    <table class="tabla">
+        <tr>
+            <td class="txt-titulo">Nombre de la empresa</td>
+        </tr>
+        <tr>
+            <td class="txt-titulo">Título del ejercicio</td>
+        </tr>
+    </table>
+
+    <!-- ENTRADAS: una fila <tr> por cada dato que se captura.
+         Caja de texto: <input type="text" id="txt...">   Lista: <select id="cbo...">
+         Valor pedido con prompt (no editable): <input type="text" id="txt..." readonly>
+         >>> CAMBIAR: agregar / quitar filas -->
+    <table class="tabla" id="tblEntradas">
+        <tr>
+            <td colspan="2" class="txt-titulo">Datos de entrada</td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta" style="width: 50%;">Nombre del cliente:</td>
+            <td style="width: 50%;"><input type="text" id="txtNomCli" maxlength="100" /></td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Tipo de cliente:</td>
+            <td>
+                <select id="cboTipoCli">
+                    <option value="">-- Seleccione --</option>
+                    <option value="N">Normal</option>
+                    <option value="M">Mayorista</option>
+                    <option value="E">Estudiante</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Valor unitario:</td>
+            <td><input type="text" id="txtVrUnit" readonly /></td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Cantidad:</td>
+            <td><input type="text" id="txtCant" inputmode="numeric" /></td>
+        </tr>
+    </table>
+
+    <!-- SALIDAS: una fila <tr> por cada resultado (todas las cajas con readonly).
+         >>> CAMBIAR: agregar / quitar filas -->
+    <table class="tabla" id="tblSalidas">
+        <tr>
+            <td colspan="2" class="txt-titulo">Resultados</td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta" style="width: 50%;">Subtotal:</td>
+            <td style="width: 50%;"><input type="text" id="txtSubTot" readonly /></td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Porcentaje descuento (%):</td>
+            <td><input type="text" id="txtPorcDscto" readonly /></td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Valor descuento:</td>
+            <td><input type="text" id="txtDscto" readonly /></td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">IVA (19 %):</td>
+            <td><input type="text" id="txtIva" readonly /></td>
+        </tr>
+        <tr>
+            <td class="txt-etiqueta">Total a pagar:</td>
+            <td><input type="text" id="txtTotal" readonly /></td>
+        </tr>
+    </table>
+
+    <!-- Botones (no cambian) -->
+    <table class="tabla">
+        <tr>
+            <td class="centro">
+                <button type="button" id="btnProcesar" class="boton">Procesar</button>
+                <button type="button" id="btnLimpiar" class="boton">Limpiar</button>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Scripts al final del body: primero jQuery y luego el script del formulario.
+         >>> CAMBIAR el nombre del .js si el profesor pide otro -->
+    <script src="../Scripts/jquery-3.7.0.min.js"></script>
+    <script src="../scripts_form/ctlFrmPlantilla.js"></script>
+</body>
+</html>

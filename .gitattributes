@@ -2,3 +2,4 @@
 *.csproj text eol=crlf
 *.min.js -diff
 *.dll binary
+*.ps1 text eol=crlf

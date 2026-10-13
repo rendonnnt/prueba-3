@@ -1,5 +1,7 @@
 # Práctica 3 – API Web básica: "SusCopias SAS"
 
+> **¿Parcial?** En la carpeta [`plantilla`](plantilla) hay una plantilla base, con la misma estructura, para adaptarla a cualquier ejercicio de cálculo. Lee primero la guía [`plantilla/GUIA_PARCIAL.md`](plantilla/GUIA_PARCIAL.md): explica dónde va cada cosa, trae un ejemplo resuelto y un catálogo de cálculos.
+
 Solución de la guía de trabajo **FDE 048 – API Web Básica**. Es una aplicación cliente‑servidor formada por **dos proyectos independientes**. No hay archivo de solución (`.sln`) ni referencias entre ellos: cada uno se abre, compila y ejecuta por separado, y solo se comunican por HTTP enviando y recibiendo JSON.
 
 | Proyecto | Tipo en Visual Studio | Función | URL (IIS Express) |
